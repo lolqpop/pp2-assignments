@@ -4,7 +4,6 @@ def load_config(filename='database.ini', section='postgresql'):
     parser = ConfigParser()
     parser.read(filename, encoding='utf-8')
 
-    # get section, default to postgresql
     config = {}
     if parser.has_section(section):
         params = parser.items(section)

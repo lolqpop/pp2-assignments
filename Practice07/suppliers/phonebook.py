@@ -14,8 +14,7 @@ def execute_query(sql, params=None, fetch=False):
                 conn.commit()
     except Exception as e:
         print(f"Ошибка при выполнении запроса: {e}")
-
-#2 Вставка данных 
+ 
 def insert_from_console():
     name = input("Введите имя: ")
     phone = input("Введите телефон: ")
@@ -27,7 +26,7 @@ ON CONFLICT (phone_number) DO NOTHING;
     execute_query(sql, (name, phone))
     print("Контакт добавлен!")
 
-#2 Вставка данных 
+
 def upload_from_csv(file_name):
     sql = "INSERT INTO phonebook(first_name, phone_number) VALUES(%s, %s)"
     try:
@@ -40,7 +39,7 @@ def upload_from_csv(file_name):
     except FileNotFoundError:
         print("Файл CSV не найден.")
 
-#3 Обновление данных
+
 def update_contact(user_id, new_name=None, new_phone=None):
     if new_name:
         execute_query("UPDATE phonebook SET first_name = %s WHERE user_id = %s", (new_name, user_id))
@@ -48,7 +47,7 @@ def update_contact(user_id, new_name=None, new_phone=None):
         execute_query("UPDATE phonebook SET phone_number = %s WHERE user_id = %s", (new_phone, user_id))
     print("Данные обновлены.")
 
-#4 Поиск с фильтрами
+
 def search_contacts(name_filter=""):
     sql = "SELECT * FROM phonebook WHERE first_name ILIKE %s"
     results = execute_query(sql, (f'%{name_filter}%',), fetch=True)
@@ -60,7 +59,7 @@ def search_contacts(name_filter=""):
     else:
         print("Контакты не найдены или произошла ошибка.")
 
-#5 Удаление
+
 def delete_contact(target):
     sql = "DELETE FROM phonebook WHERE first_name = %s OR phone_number = %s"
     execute_query(sql, (target, target))
@@ -82,7 +81,6 @@ if __name__ == '__main__':
         if choice == '1':
             insert_from_console()
         elif choice == '2':
-            # Создай файл data.csv в этой же папке перед запуском!
             upload_from_csv('data.csv')
         elif choice == '3':
             uid = input("Введите ID контакта для изменения: ")
