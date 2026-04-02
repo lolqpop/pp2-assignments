@@ -10,22 +10,19 @@ def execute_query(sql, params=None, fetch=False, is_procedure=False):
                 cur.execute(sql, params)
                 if fetch:
                     return cur.fetchall()
-                # Если это процедура или insert/update, коммит произойдет автоматически благодаря 'with'
     except Exception as e:
         print(f"Ошибка при выполнении запроса: {e}")
 
-# 1. Теперь используем процедуру UPSERT (Добавление или Обновление)
+#1
 def insert_or_update_from_console():
     name = input("Введите имя: ")
     phone = input("Введите телефон: ")
-    # Вызываем процедуру через CALL
     sql = "CALL upsert_contact(%s, %s)"
     execute_query(sql, (name, phone))
     print(f"Контакт {name} обработан (добавлен или обновлен).")
 
-# 2. Используем функцию поиска с паттерном
+#2
 def search_contacts_advanced(pattern=""):
-    # Вызываем SQL-функцию через SELECT
     sql = "SELECT * FROM find_contacts(%s)"
     results = execute_query(sql, (pattern,), fetch=True)
     
@@ -35,7 +32,7 @@ def search_contacts_advanced(pattern=""):
     else:
         print("Ничего не найдено.")
 
-# 3. Добавим пагинацию (новое в Practice 08)
+#3
 def show_paged_contacts():
     limit = input("Сколько контактов вывести на странице? ")
     offset = input("Сколько контактов пропустить? ")
@@ -46,7 +43,7 @@ def show_paged_contacts():
         for row in results:
             print(f"ID: {row[0]} | Имя: {row[1]} | Тел: {row[2]}")
 
-# 4. Массовая вставка (используем нашу функцию bulk_insert_contacts)
+#4
 def upload_from_csv_bulk(file_name):
     names = []
     phones = []
@@ -58,7 +55,6 @@ def upload_from_csv_bulk(file_name):
                 names.append(row[0])
                 phones.append(row[1])
         
-        # Передаем списки как массивы PostgreSQL
         sql = "SELECT * FROM bulk_insert_contacts(%s, %s)"
         rejected = execute_query(sql, (names, phones), fetch=True)
         
@@ -70,7 +66,7 @@ def upload_from_csv_bulk(file_name):
                 
     except FileNotFoundError:
         print("Файл CSV не найден.")
-        
+  #5      
 def delete_contact_advanced():
     target = input("Введите имя или номер для удаления: ")
     sql = "CALL delete_contact_by_name_or_phone(%s)"
@@ -79,7 +75,7 @@ def delete_contact_advanced():
 
 if __name__ == '__main__':
     while True:
-        print("\n PhoneBook Menu ")
+        print("\n--- PhoneBook Menu ")
         print("1. Добавить/Обновить контакт")
         print("2. Загрузить из CSV")
         print("3. Поиск по шаблону")
