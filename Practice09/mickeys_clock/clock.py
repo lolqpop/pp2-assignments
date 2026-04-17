@@ -38,7 +38,7 @@ class MickeyClock:
         while running:
             
             current_time = datetime.now()
-            # Для проверки:
+           
             minutes = current_time.minute
             seconds = current_time.second
 
@@ -55,18 +55,15 @@ class MickeyClock:
             self.screen.fill((255, 255, 255))
             self.screen.blit(self.clock_image, self.image_rect)
 
-            # Отрисовка рук
-            # Если руки смотрят не туда, попробуй поменять `start_angle` (например на 0 или 180)
-            start_angle = 90  # Если рука в файле лежит горизонтально ладонью вправо
+            start_angle = 90  
             
             for hand, angle in [(self.right_hand, minute_angle), (self.left_hand, second_angle)]:
-                # Итоговый угол = стартовая позиция + текущее время
+             
                 final_angle = start_angle + angle
                 
                 rotated_hand = pygame.transform.rotate(hand, final_angle)
                 
-                # Смещение: Нам нужно, чтобы ПЛЕЧО (край картинки) было в центре.
-                # Если рука смещена, попробуй поменять знак в Vector2(-hand.get_width() // 2, 0)
+          
                 offset = pygame.math.Vector2(hand.get_width() // 2, 0) 
                 offset.rotate_ip(-final_angle)
                 
