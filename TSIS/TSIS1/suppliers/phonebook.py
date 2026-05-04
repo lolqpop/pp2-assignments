@@ -3,8 +3,7 @@ import csv
 from connect import get_connection
 
 def show_menu():
-    print("\n" + "="*40)
-    print("📱 PHONEBOOK")
+    print(" PHONEBOOK")
     print("="*40)
     print("1. Search contacts")
     print("2. Filter by group")
@@ -21,7 +20,7 @@ def show_menu():
 def search_contacts(query):
     conn = get_connection()
     cur = conn.cursor()
-
+    # исполняет функцию с запросом и выдает все схожие резултаты с "query", и сохраняет все рузльтаты в rows как лист
     cur.execute("SELECT * FROM search_contacts(%s)", (query,))
     rows = cur.fetchall()
 
@@ -34,14 +33,14 @@ def search_contacts(query):
 def filter_by_group(group):
     conn = get_connection()
     cur = conn.cursor()
-
+    # мы просим найти в таблице групп ту строку id которой совпадает с group_id у контакта
     cur.execute("""
         SELECT c.name, c.email
         FROM contacts c
         JOIN groups g ON c.group_id = g.id
         WHERE g.name = %s
     """, (group,))
-
+    # проходимся по каждой найденной строке по очереди и выводим
     for row in cur.fetchall():
         print(row)
 
@@ -70,7 +69,7 @@ def sort_contacts(option):
 def export_json():
     conn = get_connection()
     cur = conn.cursor()
-
+    # мы берем все из контактов и присоеденяем группы и номера с left join чтобы не потерять контакты  без группы и без номеров
     cur.execute("""
         SELECT c.name, c.email, c.birthday, g.name, p.phone
         FROM contacts c
@@ -79,7 +78,7 @@ def export_json():
     """)
 
     data = cur.fetchall()
-
+    # записываем всю информацию в файл джсон как строка чтобы не было ошибки
     with open("contacts.json", "w") as f:
         json.dump(data, f, default=str)
 
@@ -105,10 +104,30 @@ def import_json():
             else:
                 cur.execute("DELETE FROM contacts WHERE name=%s", (name,))
 
+        cur.execute("SELECT id FROM groups WHERE name=%s", (group,))
+        gid = cur.fetchone()
+
+        if gid is None:
+            cur.execute(
+                "INSERT INTO groups(name) VALUES (%s) RETURNING id",
+                (group,)
+            )
+            gid = cur.fetchone()[0]
+        else:
+            gid = gid[0]
+
         cur.execute("""
-            INSERT INTO contacts(name, email, birthday)
+            INSERT INTO contacts(name, email, birthday, group_id)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id
+        """, (name, email, birthday, gid))
+
+        contact_id = cur.fetchone()[0]
+
+        cur.execute("""
+            INSERT INTO phones(contact_id, phone, type)
             VALUES (%s, %s, %s)
-        """, (name, email, birthday))
+        """, (contact_id, phone, "mobile"))
 
     conn.commit()
     conn.close()
@@ -242,7 +261,7 @@ def add_contact():
     conn.commit()
     conn.close()
 
-    print("✅ Contact added")
+    print("Contact added")
 
 def print_contacts(rows):
     print("\n" + "-"*60)

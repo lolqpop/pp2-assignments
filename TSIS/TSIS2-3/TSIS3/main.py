@@ -11,11 +11,12 @@ WIDTH = 400
 HEIGHT = 600
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Advanced Racer")
+pygame.display.set_caption("Racer")
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (220, 40, 40)
+GREEN = (40, 180, 80)
 
 settings = load_settings()
 
@@ -54,7 +55,8 @@ def leaderboard_screen():
 
         draw_text(screen, "Leaderboard", 70, 40, BLACK, 34)
 
-        data = load_leaderboard()
+        # Сортируем по очкам — лучшие первые
+        data = sorted(load_leaderboard(), key=lambda x: x["score"], reverse=True)
 
         y = 100
         if not data:
@@ -122,7 +124,42 @@ def settings_screen():
                     return
 
 
+def victory_screen(username, score, distance, coins):
+    """Экран победы — финиш достигнут"""
+    while True:
+        screen.fill(WHITE)
+
+        draw_text(screen, "You Win!", 100, 90, GREEN, 38)
+        draw_text(screen, f"Score: {score}", 120, 190, BLACK, 20)
+        draw_text(screen, f"Distance: {distance}m", 120, 225, BLACK, 20)
+        draw_text(screen, f"Coins: {coins}", 120, 260, BLACK, 20)
+
+        retry_btn = button(screen, "Play Again", 90, 350, 220, 45)
+        menu_btn = button(screen, "Main Menu", 90, 420, 220, 45)
+
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if retry_btn.collidepoint(event.pos):
+                    result, score, distance, coins = play_game(screen, username, settings)
+                    if result == "victory":
+                        # Обновляем данные и показываем снова — без рекурсии
+                        continue
+                    elif result == "game_over":
+                        game_over_screen(username, score, distance, coins)
+                    return
+
+                elif menu_btn.collidepoint(event.pos):
+                    return
+
+
 def game_over_screen(username, score, distance, coins):
+    # Цикл вместо рекурсии — исправляет потенциальный RecursionError
     while True:
         screen.fill(WHITE)
 
@@ -145,10 +182,14 @@ def game_over_screen(username, score, distance, coins):
                 if retry_btn.collidepoint(event.pos):
                     result, score, distance, coins = play_game(screen, username, settings)
 
-                    if result == "game_over":
-                        return game_over_screen(username, score, distance, coins)
-
-                    return
+                    if result == "victory":
+                        victory_screen(username, score, distance, coins)
+                        return
+                    elif result == "game_over":
+                        # Обновляем переменные и цикл перерисует экран
+                        continue
+                    else:
+                        return
 
                 elif menu_btn.collidepoint(event.pos):
                     return
@@ -177,7 +218,9 @@ def main_menu():
                     username = username_screen()
                     result, score, distance, coins = play_game(screen, username, settings)
 
-                    if result == "game_over":
+                    if result == "victory":
+                        victory_screen(username, score, distance, coins)
+                    elif result == "game_over":
                         game_over_screen(username, score, distance, coins)
 
                 elif leaderboard_btn.collidepoint(event.pos):

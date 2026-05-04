@@ -3,11 +3,14 @@ import pygame
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (170, 170, 170)
-RED = (220, 40, 40)
+
+_font_cache = {}
 
 
 def font(size=20):
-    return pygame.font.SysFont("Verdana", size)
+    if size not in _font_cache:
+        _font_cache[size] = pygame.font.SysFont("Verdana", size)
+    return _font_cache[size]
 
 
 def draw_text(screen, text, x, y, color=BLACK, size=20):

@@ -1,5 +1,19 @@
 [
     {
+        "name": "bio",
+        "score": 1861,
+        "distance": 1071,
+        "coins": 79,
+        "date": "2026-05-04 00:09"
+    },
+    {
+        "name": "bio",
+        "score": 1758,
+        "distance": 868,
+        "coins": 89,
+        "date": "2026-05-04 00:15"
+    },
+    {
         "name": "nurali",
         "score": 947,
         "distance": 647,
@@ -12,6 +26,20 @@
         "distance": 337,
         "coins": 47,
         "date": "2026-04-27 00:38"
+    },
+    {
+        "name": "blu",
+        "score": 516,
+        "distance": 266,
+        "coins": 25,
+        "date": "2026-05-03 23:31"
+    },
+    {
+        "name": "bio",
+        "score": 380,
+        "distance": 240,
+        "coins": 14,
+        "date": "2026-05-04 00:08"
     },
     {
         "name": "nurali",
@@ -35,10 +63,10 @@
         "date": "2026-04-27 00:38"
     },
     {
-        "name": "nurali",
-        "score": 109,
-        "distance": 109,
-        "coins": 0,
-        "date": "2026-04-27 00:38"
+        "name": "bio",
+        "score": 126,
+        "distance": 106,
+        "coins": 2,
+        "date": "2026-05-04 00:09"
     }
 ]
